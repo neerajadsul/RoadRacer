@@ -47,9 +47,13 @@ fn main() {
         let obstacle = game.add_sprite(format!("obstacle{}", i), preset);
         obstacle.layer = 5.0;
         obstacle.collision = true;
-        obstacle.translation.y = thread_rng().gen_range((-WINDOW_HEIGHT/2.0)+300.0..WINDOW_HEIGHT/2.0);
+        obstacle.translation.y = thread_rng().gen_range(-100.0..WINDOW_HEIGHT/2.0);
         obstacle.translation.x = thread_rng().gen_range(-280.0..280.0);
     }
+
+    // create player health message
+    let health_msg = game.add_text("health_msg", "Health: 5");
+    health_msg.translation = Vec2::new(WINDOW_WIDTH/2.0 - 100.0, -WINDOW_HEIGHT/2.0 + 50.0);
 
     // game music
     game.audio_manager
@@ -92,10 +96,23 @@ fn game_logic(engine: &mut Engine, game_state: &mut GameState) {
         if sprite.label.starts_with("obstacle") {
             sprite.translation.y -= ROAD_SPEED * engine.delta_f32;
             if sprite.translation.y < (-WINDOW_HEIGHT/2.0) {
-                sprite.translation.y = thread_rng().gen_range((-WINDOW_HEIGHT/2.0)+300.0..WINDOW_HEIGHT/2.0);
+                sprite.translation.y = thread_rng().gen_range(-100.0..WINDOW_HEIGHT/2.0);
                 sprite.translation.x = thread_rng().gen_range(-280.0..280.0);
             }
         }
+    }
+
+    let health_msg = engine.texts.get_mut("health_msg").unwrap();
+    for event in engine.collision_events.drain(..) {
+        if !event.pair.either_contains("player1") || event.state.is_end() {
+            continue;
+        }
+        if game_state.health > 0 {
+            game_state.health -= 1;
+            health_msg.value = format!("Health: {}", game_state.health);
+            engine.audio_manager.play_sfx(SfxPreset::Impact1, 0.45);
+        }
+
     }
 
 }
