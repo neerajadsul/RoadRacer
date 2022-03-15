@@ -1,4 +1,6 @@
 use std::ops::RangeBounds;
+use rand::prelude::*;
+use SpritePreset::*;
 
 use rusty_engine::prelude::*;
 
@@ -38,6 +40,15 @@ fn main() {
         roadline.scale = 0.1;
         roadline.rotation = UP;
         roadline.translation.y = WINDOW_HEIGHT - 150.0 * i as f32;
+    }
+
+    let obstacle_presets = vec![RacingBarrelBlue, RacingBarrelRed, RacingConeStraight];
+    for (i, preset) in obstacle_presets.into_iter().enumerate() {
+        let obstacle = game.add_sprite(format!("obstacle{}", i), preset);
+        obstacle.layer = 5.0;
+        obstacle.collision = true;
+        obstacle.translation.y = thread_rng().gen_range((-WINDOW_HEIGHT/2.0)+300.0..WINDOW_HEIGHT/2.0);
+        obstacle.translation.x = thread_rng().gen_range(-280.0..280.0);
     }
 
     // game music
