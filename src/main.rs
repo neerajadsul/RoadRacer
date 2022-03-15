@@ -89,6 +89,13 @@ fn game_logic(engine: &mut Engine, game_state: &mut GameState) {
                 sprite.translation.y = WINDOW_HEIGHT - 25.0;
             }
         }
+        if sprite.label.starts_with("obstacle") {
+            sprite.translation.y -= ROAD_SPEED * engine.delta_f32;
+            if sprite.translation.y < (-WINDOW_HEIGHT/2.0) {
+                sprite.translation.y = thread_rng().gen_range((-WINDOW_HEIGHT/2.0)+300.0..WINDOW_HEIGHT/2.0);
+                sprite.translation.x = thread_rng().gen_range(-280.0..280.0);
+            }
+        }
     }
 
 }
