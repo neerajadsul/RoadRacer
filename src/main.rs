@@ -9,6 +9,7 @@ struct GameState {
 
 /// player speed in pixels per second
 const PLAYER_SPEED: f32 = 250.0;
+const ROAD_SPEED: f32 = 400.0;
 const WINDOW_WIDTH: f32 = 600.0;
 const WINDOW_HEIGHT: f32 = 1000.0;
 
@@ -31,6 +32,13 @@ fn main() {
     player1.rotation = UP;
     player1.layer = 10.0;
     player1.collision = true;
+
+    for i in 1..15 {
+        let roadline = game.add_sprite(format!("roadline{}", i), SpritePreset::RacingBarrierWhite);
+        roadline.scale = 0.1;
+        roadline.rotation = UP;
+        roadline.translation.y = WINDOW_HEIGHT - 150.0 * i as f32;
+    }
 
     // game music
     game.audio_manager
@@ -60,8 +68,16 @@ fn game_logic(engine: &mut Engine, game_state: &mut GameState) {
     }
     if player1.translation.x < -WINDOW_WIDTH / 2.0 {
         player1.translation.x = -WINDOW_WIDTH / 2.0;
-    }
-
+    }    
     // player1.rotation = direction * 1.15;
     
+    for sprite in engine.sprites.values_mut() {
+        if sprite.label.starts_with("roadline") {
+            sprite.translation.y -= ROAD_SPEED * engine.delta_f32;
+            if sprite.translation.y < (-WINDOW_HEIGHT/2.0) {
+                sprite.translation.y = WINDOW_HEIGHT - 25.0;
+            }
+        }
+    }
+
 }
