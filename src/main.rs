@@ -67,6 +67,11 @@ fn main() {
 
 fn game_logic(engine: &mut Engine, game_state: &mut GameState) {
     // game logic
+
+    if game_state.lost {
+        return;
+    }
+
     let mut direction: f32 = 0.0;
 
     if engine.keyboard_state.pressed(KeyCode::Left) {
@@ -113,6 +118,14 @@ fn game_logic(engine: &mut Engine, game_state: &mut GameState) {
             engine.audio_manager.play_sfx(SfxPreset::Impact1, 0.45);
         }
 
+    }
+
+    if game_state.health == 0 {
+        game_state.lost = true;
+        let game_over = engine.add_text("game_over", "Game Over!");
+        game_over.font_size = 96.0;
+        engine.audio_manager.stop_music();
+        engine.audio_manager.play_sfx(SfxPreset::Jingle3, 0.35);
     }
 
 }
